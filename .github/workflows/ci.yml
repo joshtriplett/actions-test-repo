@@ -25,3 +25,11 @@ jobs:
             cargo clippy --version
       - run: env
       - run: cargo clippy -v --workspace --all-targets --all-features
+      - run: |
+            o=$(pwd)
+            d=$(mktemp -d)
+            cd "$d"
+            cargo new foo
+            cd foo
+            cp "$o/src/lib.rs" src/lib.rs
+            cargo clippy -v --workspace --all-targets --all-features
