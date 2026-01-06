@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - run: rustup toolchain install stable
+      - run: |
+            rustup toolchain list
+            echo == Versions ==
+            rustc --version
+            cargo --version
+            cargo clippy --version
+      - run: env
+      - run: cargo clippy -v --workspace --all-targets --all-features
+      - run: |
+            o=$(pwd)
+            d=$(mktemp -d)
+            cd "$d"
+            cargo new foo
+            cd foo
+            cp "$o/src/lib.rs" src/lib.rs
+            cargo clippy -v --workspace --all-targets --all-features
